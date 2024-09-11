@@ -19,6 +19,9 @@ const NavBar = () => {
 
     return (
         <View style={styles.navBar}>
+            <TouchableOpacity onPress={handleStockPress} style={styles.buttonContainer}>
+                <Text style={styles.buttonText}>Productos</Text>
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleHomePress} style={styles.buttonContainer}>
                 <Image 
                     source={require('../../assets/home.png')} 
@@ -26,11 +29,8 @@ const NavBar = () => {
                     resizeMode="contain"
                 />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleStockPress} style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Controlar Stock</Text>
-            </TouchableOpacity>
             <TouchableOpacity onPress={handleEnvoicePress} style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Controlar Pedidos</Text>
+                <Text style={styles.buttonText}>Pedidos</Text>
             </TouchableOpacity>
         </View>
     );

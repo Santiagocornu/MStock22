@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Button, TextInput, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useProducts } from '../../Context/ProductContext';
 
 const ItemAdd = () => {
-  const [objects, setObjects] = useState([]);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [image, setImage] = useState(null);
+  const { addProduct } = useProducts(); // Obtener la función addProduct del contexto
+  const [name, setName] = React.useState('');
+  const [price, setPrice] = React.useState('');
+  const [image, setImage] = React.useState(null);
 
   useEffect(() => {
     (async () => {
@@ -17,16 +18,11 @@ const ItemAdd = () => {
     })();
   }, []);
 
-  // Debugging useEffect to check image state
-  useEffect(() => {
-    console.log("Current image URI:", image);
-  }, [image]);
-
   const createObject = () => {
     if (name.trim() !== '' && price.trim() !== '' && image) {
-      const newObject = { id: objects.length + 1, name, price, image };
+      const newObject = { id: Date.now(), name, price, image }; // Usar Date.now() para generar un ID único
+      addProduct(newObject); // Usar la función addProduct del contexto
       console.log("Nuevo objeto creado:", newObject);
-      setObjects([...objects, newObject]);
       setName('');
       setPrice('');
       setImage(null);
@@ -44,38 +40,31 @@ const ItemAdd = () => {
     });
 
     if (!result.canceled) {
-      console.log("Imagen seleccionada:", result.assets[0].uri); // Use the correct path to the URI
-      setImage(result.assets[0].uri); // Update to use the correct URI
+      console.log("Imagen seleccionada:", result.assets[0].uri);
+      setImage(result.assets[0].uri);
     } else {
       console.log("Selección de imagen cancelada");
     }
   };
 
   return (
-    <View>
+    <View style={{ padding: 20 }}>
       <Button title="Selecciona una imagen" onPress={pickImage} />
       {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
       <TextInput
         placeholder="Nombre"
         value={name}
         onChangeText={setName}
+        style={{ borderWidth: 1, marginVertical: 10, padding: 8 }}
       />
       <TextInput
         placeholder="Precio"
         value={price}
         onChangeText={setPrice}
         keyboardType="numeric"
+        style={{ borderWidth: 1, marginVertical: 10, padding: 8 }}
       />
       <Button title="Crear Producto" onPress={createObject} />
-      {objects.map((obj) => (
-        <View key={obj.id} style={{ marginVertical: 10 }}>
-          <Text>{obj.name}</Text>
-          <Text>{obj.price}</Text>
-          {obj.image && (
-            <Image source={{ uri: obj.image }} style={{ width: 100, height: 100, resizeMode: 'contain' }} />
-          )}
-        </View>
-      ))}
     </View>
   );
 };

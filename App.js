@@ -7,6 +7,7 @@ import Home from './component/Home/Home';
 import ManageStock from './component/ManageStock/ManageStock';
 import ManageEnvoice from './component/ManageEnvoice/ManageEnvoice';
 import ItemAdd from './component/ItemAdd/ItemAdd';
+import { ProductProvider } from './Context/ProductContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,8 +15,10 @@ export default function App() {
     const statusBarHeight = StatusBar.currentHeight || 0;
 
     return (
+        <ProductProvider>
         <NavigationContainer>
             <View style={[styles.container, { marginTop: statusBarHeight }]}>
+            
                 <Stack.Navigator screenOptions={{ headerShown: false }}>
                     <Stack.Screen 
                         name="Home" 
@@ -34,9 +37,11 @@ export default function App() {
                         component={ItemAdd}
                     />
                 </Stack.Navigator>
+                
                 <NavBar />
             </View>
         </NavigationContainer>
+        </ProductProvider>
     );
 }
 
