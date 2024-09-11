@@ -33,6 +33,7 @@ const ItemDisplay = () => {
                 contentContainerStyle={styles.listContainer}
                 numColumns={2} // Mantener el número de columnas constante
                 key={`${products.length}`} // Cambia la clave para forzar un nuevo renderizado si cambia la longitud de los productos
+                showsVerticalScrollIndicator={false} // Ocultar la barra de desplazamiento vertical
             />
         </View>
     );
@@ -43,9 +44,9 @@ const { width } = Dimensions.get('window'); // Obtener el ancho de la pantalla
 const styles = StyleSheet.create({
     ItemDisplay: {
         flex: 1,
-        justifyContent: 'center', // Centra verticalmente
-        alignItems: 'center', // Centra horizontalmente
-        backgroundColor: '#fff', // O el color que prefieras
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
     },
     productContainer: {
         width: (width / 2) - 15, // Ajustar el ancho al 50% menos el margen
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
     },
-    productPrice:{
+    productPrice: {
         fontSize: 16,
         fontWeight: 'light',
     },
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,
-        gap: 20
+        gap: 20,
     },
     icon: {
         height: 30,
