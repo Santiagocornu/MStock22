@@ -1,10 +1,12 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, Image, Dimensions } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity, Modal } from "react-native";
 import { useProducts } from '../../Context/ProductContext'; // Asegúrate de que la ruta sea correcta
-import { TouchableOpacity } from "react-native";
+import ItemEdit from "../ItemEdit/ItemEdit";
+
 
 const ItemDisplay = () => {
-    const { products } = useProducts(); // Obtener la lista de productos del contexto
+    const { products, removeProduct } = useProducts(); // Obtener la lista de productos y la función removeProduct del contexto
+    const [editingItem, setEditingItem] = useState(null); // Estado para el producto que se está editando
 
     const renderItem = ({ item }) => (
         <View style={styles.productContainer}>
@@ -14,15 +16,19 @@ const ItemDisplay = () => {
             <Text style={styles.productName}>{item.name}</Text>
             <Text style={styles.productPrice}>${item.price}</Text>
             <View style={styles.iconsDisplay}>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => removeProduct(item.id)}>
                     <Image source={require('../../assets/deleteIcon.png')} style={styles.icon} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => setEditingItem(item)}>
                     <Image source={require('../../assets/editIcon.png')} style={styles.icon} />
                 </TouchableOpacity>
             </View>
         </View>
     );
+
+    const handleCloseEdit = () => {
+        setEditingItem(null);
+    };
 
     return (
         <View style={styles.ItemDisplay}>
@@ -35,6 +41,9 @@ const ItemDisplay = () => {
                 key={`${products.length}`} // Cambia la clave para forzar un nuevo renderizado si cambia la longitud de los productos
                 showsVerticalScrollIndicator={false} // Ocultar la barra de desplazamiento vertical
             />
+            {editingItem && (
+                <ItemEdit item={editingItem} onClose={handleCloseEdit} />
+            )}
         </View>
     );
 };

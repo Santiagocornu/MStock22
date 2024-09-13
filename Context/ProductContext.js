@@ -13,8 +13,18 @@ export const ProductProvider = ({ children }) => {
         setProducts((prevProducts) => prevProducts.filter(product => product.id !== productId));
     };
 
+    const updateProduct = (updatedProduct) => {
+        setProducts((prevProducts) =>
+            prevProducts.map((product) =>
+                product.id === updatedProduct.id ? updatedProduct : product
+            )
+        );
+    };
+
+    
+
     return (
-        <ProductContext.Provider value={{ products, addProduct, removeProduct }}>
+        <ProductContext.Provider value={{ products, addProduct, removeProduct, updateProduct }}>
             {children}
         </ProductContext.Provider>
     );

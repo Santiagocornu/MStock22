@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, Text, Button, TextInput, Image, Alert } from 'react-native';
+import { View, StyleSheet, Button, TextInput, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useProducts } from '../../Context/ProductContext';
 
-const ItemAdd = () => {
-  const { addProduct } = useProducts(); // Obtener la función addProduct del contexto
+const ItemAdd = ({ onClose }) => {
+  const { addProduct } = useProducts();
   const [name, setName] = React.useState('');
-  const [price, setPrice] = React.useState('');
+  const [price, setPrice] = React.useState(''); // Inicializar price como cadena vacía
   const [image, setImage] = React.useState(null);
 
   useEffect(() => {
@@ -19,13 +19,14 @@ const ItemAdd = () => {
   }, []);
 
   const createObject = () => {
-    if (name.trim() !== '' && price.trim() !== '' && image) {
-      const newObject = { id: Date.now(), name, price, image }; // Usar Date.now() para generar un ID único
-      addProduct(newObject); // Usar la función addProduct del contexto
+    if (name.trim() !== '' && price.trim() !== '' && image) { // Verificar que price no esté vacío
+      const newObject = { id: Date.now(), name, price: parseFloat(price), image }; // Convertir price a número
+      addProduct(newObject);
       console.log("Nuevo objeto creado:", newObject);
       setName('');
-      setPrice('');
+      setPrice(''); // Restablecer price a cadena vacía
       setImage(null);
+      onClose();
     } else {
       Alert.alert('Por favor, completa todos los campos y selecciona una imagen.');
     }
@@ -65,8 +66,15 @@ const ItemAdd = () => {
         style={{ borderWidth: 1, marginVertical: 10, padding: 8 }}
       />
       <Button title="Crear Producto" onPress={createObject} />
+      <Button title='Cerrar' onPress={onClose} style={styles.closeButton}/> 
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+closeButton:{
+  backgroundColor:'red',
+}
+})
 
 export default ItemAdd;
