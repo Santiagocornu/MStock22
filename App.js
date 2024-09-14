@@ -19,43 +19,24 @@ export default function App() {
 
     return (
         <EnvoiceProvider>
-        <ProductProvider>
-        <NavigationContainer>
-            <View style={[styles.container, { marginTop: statusBarHeight }]}>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
-                    <Stack.Screen 
-                        name="Home" 
-                        component={Home} 
-                    />
-                    <Stack.Screen 
-                        name="ManageStock" 
-                        component={ManageStock} 
-                    />
-                    <Stack.Screen 
-                        name="ManageEnvoice" 
-                        component={ManageEnvoice} 
-                    />
-                    <Stack.Screen 
-                        name="ItemAdd"
-                        component={ItemAdd}
-                    />
-                    <Stack.Screen 
-                        name="ItemEdit"
-                        component={ItemEdit}
-                    />
-                    <Stack.Screen
-                    name="EnvoiceAdd"
-                    component={EnvoiceAdd}
-                    />
-                    </Stack.Navigator>
-                <NavBar />
-            </View>
-        </NavigationContainer>
-        </ProductProvider>
+            <ProductProvider>
+                <NavigationContainer>
+                    <View style={[styles.container, { marginTop: statusBarHeight }]}>
+                        <Stack.Navigator screenOptions={{ headerShown: false }}>
+                            <Stack.Screen name="Home" component={Home} />
+                            <Stack.Screen name="ManageStock" component={ManageStock} />
+                            <Stack.Screen name="ManageEnvoice" component={ManageEnvoice} />
+                            <Stack.Screen name="ItemAdd" component={ItemAdd} />
+                            <Stack.Screen name="ItemEdit" component={ItemEdit} />
+                            <Stack.Screen name="EnvoiceAdd" component={EnvoiceAdd} />
+                        </Stack.Navigator>
+                        <NavBar />
+                    </View>
+                </NavigationContainer>
+            </ProductProvider>
         </EnvoiceProvider>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {

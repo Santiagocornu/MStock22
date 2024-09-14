@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Button, TextInput, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useProducts } from '../../Context/ProductContext';
+import * as SQLite from 'react-native-sqlite-storage';
+
+
 
 const ItemAdd = ({ onClose }) => {
-  const { addProduct } = useProducts();
   const [name, setName] = React.useState('');
   const [price, setPrice] = React.useState(''); // Inicializar price como cadena vacía
   const [image, setImage] = React.useState(null);
@@ -20,8 +21,8 @@ const ItemAdd = ({ onClose }) => {
 
   const createObject = () => {
     if (name.trim() !== '' && price.trim() !== '' && image) { // Verificar que price no esté vacío
-      const newObject = { id: Date.now(), name, price: parseFloat(price), image }; // Convertir price a número
-      addProduct(newObject);
+      const newObject = { name, price: parseFloat(price), image }; // Convertir price a número
+      addProductToDatabase(newObject);
       console.log("Nuevo objeto creado:", newObject);
       setName('');
       setPrice(''); // Restablecer price a cadena vacía
@@ -30,6 +31,22 @@ const ItemAdd = ({ onClose }) => {
     } else {
       Alert.alert('Por favor, completa todos los campos y selecciona una imagen.');
     }
+  };
+
+  const addProductToDatabase = (product) => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'INSERT INTO Items (name, price, image) VALUES (?, ?, ?)',
+        [product.name, product.price, product.image],
+        () => {
+          Alert.alert('Producto agregado exitosamente');
+        },
+        (tx, error) => {
+          console.error('Error al agregar producto', error);
+          Alert.alert('Error al agregar producto');
+        }
+      );
+    });
   };
 
   const pickImage = async () => {
@@ -72,9 +89,9 @@ const ItemAdd = ({ onClose }) => {
 };
 
 const styles = StyleSheet.create({
-closeButton:{
-  backgroundColor:'red',
-}
-})
+  closeButton: {
+    backgroundColor: 'red',
+  },
+});
 
 export default ItemAdd;

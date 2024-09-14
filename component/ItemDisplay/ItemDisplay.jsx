@@ -1,12 +1,36 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity, Modal } from "react-native";
-import { useProducts } from '../../Context/ProductContext'; // Asegúrate de que la ruta sea correcta
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity } from "react-native";
+import * as SQLite from 'expo-sqlite';
 import ItemEdit from "../ItemEdit/ItemEdit";
 
+const db = SQLite.openDatabase('MStock.db'); // Nombre de la base de datos
 
 const ItemDisplay = () => {
-    const { products, removeProduct } = useProducts(); // Obtener la lista de productos y la función removeProduct del contexto
-    const [editingItem, setEditingItem] = useState(null); // Estado para el producto que se está editando
+    const [products, setProducts] = useState([]);
+    const [editingItem, setEditingItem] = useState(null);
+
+    const fetchProducts = () => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'SELECT * FROM Items',
+                [],
+                (tx, results) => {
+                    const items = [];
+                    for (let i = 0; i < results.rows.length; i++) {
+                        items.push(results.rows.item(i));
+                    }
+                    setProducts(items);
+                },
+                (tx, error) => {
+                    console.error('Error al cargar productos', error);
+                }
+            );
+        });
+    };
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
 
     const renderItem = ({ item }) => (
         <View style={styles.productContainer}>
@@ -26,8 +50,24 @@ const ItemDisplay = () => {
         </View>
     );
 
+    const removeProduct = (id) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'DELETE FROM Items WHERE id = ?',
+                [id],
+                () => {
+                    fetchProducts();
+                },
+                (tx, error) => {
+                    console.error('Error al eliminar producto', error);
+                }
+            );
+        });
+    };
+
     const handleCloseEdit = () => {
         setEditingItem(null);
+        fetchProducts();
     };
 
     return (
@@ -37,9 +77,9 @@ const ItemDisplay = () => {
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
                 contentContainerStyle={styles.listContainer}
-                numColumns={2} // Mantener el número de columnas constante
-                key={`${products.length}`} // Cambia la clave para forzar un nuevo renderizado si cambia la longitud de los productos
-                showsVerticalScrollIndicator={false} // Ocultar la barra de desplazamiento vertical
+                numColumns={2}
+                key={`${products.length}`}
+                showsVerticalScrollIndicator={false}
             />
             {editingItem && (
                 <ItemEdit item={editingItem} onClose={handleCloseEdit} />
@@ -48,7 +88,7 @@ const ItemDisplay = () => {
     );
 };
 
-const { width } = Dimensions.get('window'); // Obtener el ancho de la pantalla
+const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     ItemDisplay: {
@@ -58,13 +98,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     productContainer: {
-        width: (width / 2) - 15, // Ajustar el ancho al 50% menos el margen
+        width: (width / 2) - 15,
         padding: 10,
         alignItems: 'center',
-        borderWidth: 1, // Ancho del borde
-        borderColor: '#000', // Color del borde
-        borderRadius: 10, // Radio de los bordes redondeados
-        margin: 5, // Espacio entre cada carta
+        borderWidth: 1,
+        borderColor: '#000',
+        borderRadius: 10,
+        margin: 5,
     },
     productImage: {
         width: 100,
