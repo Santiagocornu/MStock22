@@ -3,7 +3,7 @@ import { StyleSheet, View, TouchableOpacity, Text, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const NavBar = () => {
-    const navigation = useNavigation(); // Get navigation from context
+    const navigation = useNavigation();
 
     const handleHomePress = () => {
         navigation.navigate('Home');
@@ -14,7 +14,7 @@ const NavBar = () => {
     };
 
     const handleEnvoicePress = () => {
-        navigation.navigate('ManageEnvoice');
+        navigation.navigate('ManageInvoice');
     };
 
     return (

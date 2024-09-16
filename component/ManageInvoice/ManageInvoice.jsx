@@ -1,10 +1,10 @@
 import React from "react";
 import { View, StyleSheet, Modal, TouchableOpacity, Text } from "react-native";
-import EnvoiceDisplay from "../EnvoiceDisplay/EnvoiceDisplay";
-import EnvoiceAdd from "../EnvoiceAdd/EnvoiceAdd";
+import InvoiceDisplay from "../InvoiceDisplay/InvoiceDisplay";
+import InvoiceAdd from "../InvoiceAdd/InvoiceAdd";
 import { useState } from "react";
 
-const ManageEnvoice = () => {
+const ManageInvoice = () => { 
   const [modalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -12,11 +12,11 @@ const ManageEnvoice = () => {
   };
 
   return (
-    <View style={styles.ManageEnvoice}>
+    <View style={styles.manageInvoice}> 
       <TouchableOpacity onPress={toggleModal}>
         <Text style={styles.buttonText}>Añadir Pedido +</Text>
       </TouchableOpacity>
-      <EnvoiceDisplay />
+      <InvoiceDisplay />
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -25,7 +25,7 @@ const ManageEnvoice = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <EnvoiceAdd onClose={toggleModal} />
+            <InvoiceAdd onClose={toggleModal} />
             <TouchableOpacity onPress={toggleModal}>
               <Text style={styles.closeButton}>Cerrar</Text>
             </TouchableOpacity>
@@ -37,7 +37,7 @@ const ManageEnvoice = () => {
 };
 
 const styles = StyleSheet.create({
-  ManageEnvoice: {
+  manageInvoice: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -67,4 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ManageEnvoice;
+export default ManageInvoice; // Cambiado de ManageEnvoice a ManageInvoice
