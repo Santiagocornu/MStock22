@@ -1,94 +1,98 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity, Modal } from "react-native";
-import { useProducts } from '../../Context/ProductContext'; // Asegúrate de que la ruta sea correcta
-import ItemEdit from "../ItemEdit/ItemEdit";
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Text, StyleSheet, Image, Modal, TouchableOpacity } from 'react-native';
+import useProducts from '../../CustomHooks/UseProduct';
+import ItemEdit from '../ItemEdit/ItemEdit';
 
+const ProductList = () => {
+  const { products, deleteById } = useProducts();
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-const ItemDisplay = () => {
-    const { products, removeProduct } = useProducts(); // Obtener la lista de productos y la función removeProduct del contexto
-    const [editingItem, setEditingItem] = useState(null); // Estado para el producto que se está editando
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedProduct(null);
+  };
 
-    const renderItem = ({ item }) => (
-        <View style={styles.productContainer}>
-            {item.image && (
-                <Image source={{ uri: item.image }} style={styles.productImage} />
-            )}
+  const openEditModal = (item) => {
+    setSelectedProduct(item);
+    setModalVisible(true);
+  };
+
+  return (
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        {products.map((item) => (
+          <View key={item.id} style={styles.productContainer}>
+            {item.image && <Image source={{ uri: item.image }} style={styles.productImage} />}
             <Text style={styles.productName}>{item.name}</Text>
             <Text style={styles.productPrice}>${item.price}</Text>
-            <View style={styles.iconsDisplay}>
-                <TouchableOpacity style={styles.iconButton} onPress={() => removeProduct(item.id)}>
-                    <Image source={require('../../assets/deleteIcon.png')} style={styles.icon} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={() => setEditingItem(item)}>
-                    <Image source={require('../../assets/editIcon.png')} style={styles.icon} />
-                </TouchableOpacity>
+            <View style={styles.iconContainer}>
+              <TouchableOpacity onPress={() => openEditModal(item)}>
+                <Image source={require('../../assets/editIcon.png')} style={styles.icon} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => deleteById(item.id)}>
+                <Image source={require('../../assets/deleteIcon.png')} style={styles.icon} />
+              </TouchableOpacity>
             </View>
-        </View>
-    );
-
-    const handleCloseEdit = () => {
-        setEditingItem(null);
-    };
-
-    return (
-        <View style={styles.ItemDisplay}>
-            <FlatList
-                data={products}
-                renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
-                contentContainerStyle={styles.listContainer}
-                numColumns={2} // Mantener el número de columnas constante
-                key={`${products.length}`} // Cambia la clave para forzar un nuevo renderizado si cambia la longitud de los productos
-                showsVerticalScrollIndicator={false} // Ocultar la barra de desplazamiento vertical
-            />
-            {editingItem && (
-                <ItemEdit item={editingItem} onClose={handleCloseEdit} />
-            )}
-        </View>
-    );
+          </View>
+        ))}
+      </ScrollView>
+      {selectedProduct && (
+        <Modal visible={isModalVisible} animationType="slide">
+          <ItemEdit item={selectedProduct} onClose={closeModal} />
+        </Modal>
+      )}
+    </View>
+  );
 };
 
-const { width } = Dimensions.get('window'); // Obtener el ancho de la pantalla
-
 const styles = StyleSheet.create({
-    ItemDisplay: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
-    productContainer: {
-        width: (width / 2) - 15, // Ajustar el ancho al 50% menos el margen
-        padding: 10,
-        alignItems: 'center',
-        borderWidth: 1, // Ancho del borde
-        borderColor: '#000', // Color del borde
-        borderRadius: 10, // Radio de los bordes redondeados
-        margin: 5, // Espacio entre cada carta
-    },
-    productImage: {
-        width: 100,
-        height: 100,
-        resizeMode: 'contain',
-    },
-    productName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-    },
-    productPrice: {
-        fontSize: 16,
-        fontWeight: 'light',
-    },
-    iconsDisplay: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 10,
-        gap: 20,
-    },
-    icon: {
-        height: 30,
-        width: 30,
-    },
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  scrollContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  productContainer: {
+    width: '48%',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 5,
+  },
+  productPrice: {
+    fontSize: 14,
+    marginVertical: 5,
+  },
+  productImage: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'contain',
+    marginBottom: 5,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 5,
+  },
+  icon:{
+    height:30,
+    width:30,
+  }
 });
 
-export default ItemDisplay;
+export default ProductList;

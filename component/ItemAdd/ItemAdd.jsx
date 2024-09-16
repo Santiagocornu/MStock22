@@ -1,36 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Button, TextInput, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useProducts } from '../../Context/ProductContext';
+import useProducts from '../../CustomHooks/UseProduct';
 
 const ItemAdd = ({ onClose }) => {
-  const { addProduct } = useProducts();
-  const [name, setName] = React.useState('');
-  const [price, setPrice] = React.useState(''); // Inicializar price como cadena vacía
-  const [image, setImage] = React.useState(null);
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [image, setImage] = useState(null);
+  const { createProduct} = useProducts();
 
   useEffect(() => {
-    (async () => {
+    
+    const imgPermiss = async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Lo sentimos, necesitamos permisos para acceder a la galería de imágenes.');
       }
-    })();
+    };
+    imgPermiss();
   }, []);
-
-  const createObject = () => {
-    if (name.trim() !== '' && price.trim() !== '' && image) { // Verificar que price no esté vacío
-      const newObject = { id: Date.now(), name, price: parseFloat(price), image }; // Convertir price a número
-      addProduct(newObject);
-      console.log("Nuevo objeto creado:", newObject);
-      setName('');
-      setPrice(''); // Restablecer price a cadena vacía
-      setImage(null);
-      onClose();
-    } else {
-      Alert.alert('Por favor, completa todos los campos y selecciona una imagen.');
-    }
-  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -41,11 +29,17 @@ const ItemAdd = ({ onClose }) => {
     });
 
     if (!result.canceled) {
-      console.log("Imagen seleccionada:", result.assets[0].uri);
       setImage(result.assets[0].uri);
-    } else {
-      console.log("Selección de imagen cancelada");
     }
+  };
+
+  const handleCreateProduct = () => {
+    if (!name || !price || !image) {
+      Alert.alert('Error', 'Por favor, completa todos los campos.');
+      return;
+    }
+    
+    createProduct(name, price, image);
   };
 
   return (
@@ -65,16 +59,16 @@ const ItemAdd = ({ onClose }) => {
         keyboardType="numeric"
         style={{ borderWidth: 1, marginVertical: 10, padding: 8 }}
       />
-      <Button title="Crear Producto" onPress={createObject} />
+      <Button title="Crear Producto" onPress={handleCreateProduct} />
       <Button title='Cerrar' onPress={onClose} style={styles.closeButton}/> 
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-closeButton:{
-  backgroundColor:'red',
-}
-})
+  closeButton: {
+    backgroundColor: 'red',
+  },
+});
 
 export default ItemAdd;
